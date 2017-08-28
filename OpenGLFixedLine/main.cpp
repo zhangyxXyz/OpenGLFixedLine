@@ -4,15 +4,86 @@
 #include "Texture.h"
 #include "Utils.h"
 #include "ObjModel.h"
+#include "Camera.h"
 #include <iostream>
 using namespace std;
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
+#pragma comment(lib, "winmm.lib")
+
+Camera camera;
+POINT originalPos;
+bool bRotateView = false;
 
 LRESULT CALLBACK GLWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
+	case WM_MOUSEMOVE:
+		if (bRotateView)
+		{
+			POINT currentPos;
+			currentPos.x = LOWORD(lParam);
+			currentPos.y = HIWORD(lParam);
+			ClientToScreen(hwnd, &currentPos);
+			int deltaX = currentPos.x - originalPos.x;
+			int deltaY = currentPos.y - originalPos.y;
+			// limit x/sinx --> angle
+			float angleRotatedByRight = (float)deltaY / 1000.0f;
+			float angleRotatedByUp = (float)deltaX / 1000.0f;
+			camera.Yaw(-angleRotatedByUp);
+			camera.Pitch(-angleRotatedByRight);
+			SetCursorPos(originalPos.x, originalPos.y);
+		}
+		break;
+	case WM_RBUTTONDOWN:
+		originalPos.x = LOWORD(lParam);
+		originalPos.y = HIWORD(lParam);
+		ClientToScreen(hwnd, &originalPos);
+		SetCapture(hwnd);
+		ShowCursor(false);
+		bRotateView = true;
+		break;
+	case WM_RBUTTONUP:
+		bRotateView = false;
+		SetCursorPos(originalPos.x, originalPos.y);
+		ReleaseCapture();
+		ShowCursor(true);
+		break;
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case 'A':
+			camera.m_MoveLeft = true;
+			break;
+		case 'D':
+			camera.m_MoveRight = true;
+			break;
+		case 'W':
+			camera.m_MoveForward = true;
+			break;
+		case 'S':
+			camera.m_MoveBackward = true;
+			break;
+		}
+		break;
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case 'A':
+			camera.m_MoveLeft = false;
+			break;
+		case 'D':
+			camera.m_MoveRight = false;
+			break;
+		case 'W':
+			camera.m_MoveForward = false;
+			break;
+		case 'S':
+			camera.m_MoveBackward = false;
+			break;
+		}
+		break;
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		break;
@@ -113,6 +184,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	glEnable(GL_LIGHT0);
 
 	MSG msg;
+	static float sTimeSinceStartUp = timeGetTime() / 1000.0f;
 	while (true)
 	{
 		if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE))
@@ -124,8 +196,14 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		//draw scene
+		// draw scene
 		glLoadIdentity();
+		float currentTime = timeGetTime() / 1000.0f;
+		float timeElapse = currentTime - sTimeSinceStartUp;
+		sTimeSinceStartUp = currentTime;
+
+		// set up camera
+		camera.Update(0.016f);// 60 frames per second
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
