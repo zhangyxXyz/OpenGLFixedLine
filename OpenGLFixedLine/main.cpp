@@ -46,8 +46,13 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	{
 		return -1;
 	}
-	HWND hwnd = CreateWindowEx(NULL, L"GLWindow", L"OpenGL Window", WS_OVERLAPPEDWINDOW, 100, 100, 800, 600, NULL, NULL, hInstance, NULL);
-
+	RECT rect = { 0, 0, 1280, 720 };
+	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, NULL);
+	HWND hwnd = CreateWindowEx(NULL, L"GLWindow", L"OpenGL Window", WS_OVERLAPPEDWINDOW, 
+		100, 100, rect.right - rect.left, rect.bottom - rect.top, NULL, NULL, hInstance, NULL);
+	GetClientRect(hwnd, &rect);
+	int viewportWidth = rect.right - rect.left;
+	int viewportHeight = rect.bottom - rect.top;
 	// create opencl render context
 	HDC dc = GetDC(hwnd);
 	PIXELFORMATDESCRIPTOR pfd;
@@ -67,15 +72,17 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	HGLRC rc = wglCreateContext(dc);
 	wglMakeCurrent(dc, rc);// set opebgl context complete
 
+	glViewport(0, 0, viewportWidth, viewportHeight);
+
 	//openGL init
 	glMatrixMode(GL_PROJECTION);// tell the GPU processer that i would select the project Matrix
-	gluPerspective(50.0f, 800.0f / 600.0f, 0.1f, 1000.0f); // set some value to project matrix
+	gluPerspective(50.0f, (float)viewportWidth / (float)viewportHeight, 0.1f, 1000.0f); // set some value to project matrix
 	glMatrixMode(GL_MODELVIEW);// tel .. modle view matrix
 	glLoadIdentity();
 	//char* str = (char*)LoadFileContent("test.txt");
 	//printf("%s\n", str);
 	Texture texture;
-	texture.Init("./res/test.bmp");// init openGL texture
+	texture.Init("./res/earth.bmp");// init openGL texture
 	ObjModel model;
 	model.Init("./res/Sphere.obj");
 	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
@@ -83,24 +90,27 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 	glEnable(GL_CULL_FACE);
-
+	glEnable(GL_DEPTH_TEST);
 	// init light
 	float blackColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float whiteColor[] = { 1.0f,1.0f,1.0f,1.0f };
+	float lightPos[] = { 0.0f,1.0f,0.0f,0.0f };
 	glLightfv(GL_LIGHT0, GL_AMBIENT, whiteColor);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteColor);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteColor);
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
 	float blackMat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float ambientMat[] = { 0.1f,0.1f,0.1f,1.0f };
-	float diffuseMat[] = { 0.4f,0.4f,0.4f,1.0f };
+	float diffuseMat[] = { 0.8f,0.8f,0.8f,1.0f };
 	float specularMat[] = { 0.9f,0.9f,0.9f,1.0f };
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ambientMat);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, blackMat);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseMat);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specularMat);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, blackMat);
+	glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
 
-	/*glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);*/
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 
 	MSG msg;
 	while (true)
@@ -116,7 +126,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		//draw scene
 		glLoadIdentity();
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
 		model.Draw();
 		//present scene
 		SwapBuffers(dc);

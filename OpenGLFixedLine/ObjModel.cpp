@@ -137,16 +137,22 @@ void ObjModel::Init(const char * objModel)
 
 void ObjModel::Draw()
 {
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	static float angle = 0.0f;
+	angle += 0.3f;
+	if (angle >= 360.0f)
+	{
+		angle = 0.0f;
+	}
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPushMatrix();
 	glTranslatef(0.0f, 0.0f, -3.0f);
-	glRotatef(30.0f, 0.0f, 1.0f, 0.0f);
+	glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	glBegin(GL_TRIANGLES);
-	for (int i = 0;i < m_IndexCount;++i)
+	for (int i = 0; i < m_IndexCount; ++i)
 	{
 		glTexCoord2fv(m_VertextData[m_Indices[i]].texcoord);
-		glVertex3fv(m_VertextData[m_Indices[i]].position);
 		glNormal3fv(m_VertextData[m_Indices[i]].normal);
+		glVertex3fv(m_VertextData[m_Indices[i]].position);
 	}
 	glEnd();
 	glPopMatrix();
