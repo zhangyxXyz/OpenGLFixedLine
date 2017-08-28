@@ -63,7 +63,7 @@ void Camera::Update(float deltaTime)
 	if (m_MoveForward)
 	{
 		//forword direction vector
-		Vector3f forwardDirection(0.0f, 0.0f, -1.0f);
+		Vector3f forwardDirection = m_ViewCenter - m_Pos;
 		forwardDirection.Normalize();
 		m_Pos = m_Pos + forwardDirection*moveSpeed*deltaTime;
 		m_ViewCenter = m_ViewCenter + forwardDirection*moveSpeed*deltaTime;
@@ -71,7 +71,7 @@ void Camera::Update(float deltaTime)
 	if (m_MoveBackward)
 	{
 		//background direction vector
-		Vector3f backwardDirection(0.0f, 0.0f, 1.0f);
+		Vector3f backwardDirection = m_Pos - m_ViewCenter;
 		backwardDirection.Normalize();
 		m_Pos = m_Pos + backwardDirection*moveSpeed*deltaTime;
 		m_ViewCenter = m_ViewCenter + backwardDirection*moveSpeed*deltaTime;
