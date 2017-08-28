@@ -27,6 +27,9 @@
     <ClCompile Include="ObjModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="VertexData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">
@@ -36,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ObjModel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexData.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

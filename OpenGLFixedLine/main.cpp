@@ -77,12 +77,12 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Texture texture;
 	texture.Init("./res/test.bmp");// init openGL texture
 	ObjModel model;
-	model.Init("./res/Quad.obj");
+	model.Init("./res/Sphere.obj");
 	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
 	// show window
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
 	// init light
 	float blackColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
