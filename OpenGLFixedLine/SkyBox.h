@@ -1,7 +1,8 @@
 #pragma once
 #include <windows.h>
 #include <gl/GL.h>
-#include "texture.h"
+#include "Texture.h"
+#include "DisplayList.h"
 
 class SkyBox
 {
@@ -9,6 +10,7 @@ public:
 	SkyBox();
 	~SkyBox();
 public:
+	DisplayList m_SkyBox;
 	Texture* front;
 	Texture* back;
 	Texture* right;
