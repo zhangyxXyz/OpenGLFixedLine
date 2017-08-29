@@ -144,6 +144,9 @@ void ObjModel::Draw()
 		angle = 0.0f;
 	}
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_DEPTH_TEST);
 	glPushMatrix();
 	glTranslatef(0.0f, 0.0f, -3.0f);
 	glRotatef(angle, 0.0f, 1.0f, 0.0f);

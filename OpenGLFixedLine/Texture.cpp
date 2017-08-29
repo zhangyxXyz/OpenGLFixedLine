@@ -35,7 +35,7 @@ unsigned char* DecodeBmp(unsigned char* bmpFileData, int& width, int& height)
 	}
 }
 
-void Texture::Init(const char * imgPath, bool invertY)
+void Texture::Init(const char * imgPath, bool invertY, GLenum wrapMode)
 {
 	unsigned int flags = SOIL_FLAG_POWER_OF_TWO;
 	if (invertY)
@@ -44,6 +44,14 @@ void Texture::Init(const char * imgPath, bool invertY)
 	}
 	m_Path = imgPath;
 	m_textureID = SOIL_load_OGL_texture(imgPath, 0, 0, flags);
+
+	if (wrapMode == GL_CLAMP_TO_EDGE)
+	{
+		glBindTexture(GL_TEXTURE_2D, m_textureID);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 	return;
 	/*
 	// load image file from disk to memory
@@ -65,14 +73,14 @@ void Texture::Init(const char * imgPath, bool invertY)
 	*/
 }
 
-Texture * Texture::LoadTexture(const char* imagePath, bool invertY)
+Texture * Texture::LoadTexture(const char* imagePath, bool invertY, GLenum warpMode)
 {
 	if (m_CachedTextures.find(imagePath) != m_CachedTextures.end())
 	{
 		return m_CachedTextures[imagePath];
 	}
 	Texture* texture = new Texture();
-	texture->Init(imagePath, invertY);
+	texture->Init(imagePath, invertY, warpMode);
 	m_CachedTextures.insert(std::pair<std::string, Texture*>(imagePath, texture));
 	return texture;
 }

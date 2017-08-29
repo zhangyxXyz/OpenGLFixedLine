@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include "ObjModel.h"
 #include "Camera.h"
+#include "SkyBox.h"
 #include <iostream>
 using namespace std;
 #pragma comment(lib, "opengl32.lib")
@@ -12,6 +13,7 @@ using namespace std;
 #pragma comment(lib, "winmm.lib")
 
 Camera camera;
+SkyBox skybox;
 POINT originalPos;
 bool bRotateView = false;
 
@@ -157,6 +159,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	ObjModel model;
 	model.Init("./res/Sphere.obj");
 	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
+	skybox.Init("./res/skybox");
 	// show window
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
@@ -198,13 +201,15 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 		// draw scene
 		glLoadIdentity();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float currentTime = timeGetTime() / 1000.0f;
 		float timeElapse = currentTime - sTimeSinceStartUp;
 		sTimeSinceStartUp = currentTime;
 
 		// set up camera
 		camera.Update(0.016f);// 60 frames per second
-		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		// skybox
+		skybox.Draw(camera.m_Pos.x, camera.m_Pos.y, camera.m_Pos.z);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture->m_textureID);
 		model.Draw();
