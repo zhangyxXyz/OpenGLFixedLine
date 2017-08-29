@@ -137,19 +137,19 @@ void ObjModel::Init(const char * objModel)
 
 void ObjModel::Draw()
 {
-	static float angle = 0.0f;
-	angle += 0.3f;
-	if (angle >= 360.0f)
-	{
-		angle = 0.0f;
-	}
+	//static float angle = 0.0f;
+	//angle += 0.3f;
+	//if (angle >= 360.0f)
+	//{
+	//	angle = 0.0f;
+	//}
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
+	//glEnable(GL_DEPTH_TEST);
 	glPushMatrix();
-	glTranslatef(0.0f, 0.0f, -3.0f);
-	glRotatef(angle, 0.0f, 1.0f, 0.0f);
+	//glTranslatef(0.0f, 0.0f, -3.0f);
+	//glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	glBegin(GL_TRIANGLES);
 	for (int i = 0; i < m_IndexCount; ++i)
 	{

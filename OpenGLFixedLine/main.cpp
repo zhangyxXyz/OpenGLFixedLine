@@ -142,7 +142,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	}
 	RECT rect = { 0, 0, 1280, 720 };
 	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, NULL);
-	HWND hwnd = CreateWindowEx(NULL, L"GLWindow", L"OpenGL Window", WS_OVERLAPPEDWINDOW, 
+	HWND hwnd = CreateWindowEx(NULL, L"GLWindow", L"OpenGL Window", WS_OVERLAPPEDWINDOW,
 		100, 100, rect.right - rect.left, rect.bottom - rect.top, NULL, NULL, hInstance, NULL);
 	GetClientRect(hwnd, &rect);
 	int viewportWidth = rect.right - rect.left;
@@ -242,6 +242,16 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		ground.Draw();
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture->m_textureID);
+		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+		glPushMatrix();
+		glTranslatef(0.0f, -2.0f, 0.0f);
+		glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+		model.Draw();
+		glPopMatrix();
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
 		model.Draw();
 		// draw UI
 		camera.SwitchTo2D();
