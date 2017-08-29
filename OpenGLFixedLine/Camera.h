@@ -10,6 +10,8 @@ public:
 	Vector3f m_Pos;
 	Vector3f m_ViewCenter;
 	Vector3f m_Up;
+	int m_ViewPortWidth;
+	int m_VIewPortHeight;
 	union
 	{
 		struct  
@@ -20,9 +22,13 @@ public:
 			bool m_MoveBackward;
 		};
 	};
-	void RotateView(float angle, float x, float y, float z);
 	void Update(float deltaTime);
 	void Pitch(float angle);
 	void Yaw(float angle);
+	void SwitchTo3D();
+	void SwitchTo2D();
+
+protected:
+	void RotateView(float angle, float x, float y, float z);
 };
 

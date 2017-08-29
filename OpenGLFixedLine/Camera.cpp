@@ -98,3 +98,19 @@ void Camera::Yaw(float angle)
 	// up direction vector(left and right)
 	RotateView(angle, m_Up.x, m_Up.y, m_Up.z);
 }
+
+void Camera::SwitchTo3D()
+{
+	glMatrixMode(GL_PROJECTION);// tell the GPU processer that i would select the project Matrix
+	glLoadIdentity();
+	gluPerspective(50.0f, (float)m_ViewPortWidth / (float)m_VIewPortHeight, 0.1f, 1000.0f); // set some value to project matrix
+	glMatrixMode(GL_MODELVIEW);// tel .. modle view matrix
+}
+
+void Camera::SwitchTo2D()
+{
+	glMatrixMode(GL_PROJECTION);//tell the gpu processer that i would select the projection matrix
+	glLoadIdentity();
+	gluOrtho2D(-m_ViewPortWidth / 2, m_ViewPortWidth / 2, -m_VIewPortHeight / 2, m_VIewPortHeight / 2);
+	glMatrixMode(GL_MODELVIEW);//tell .... model view matrix
+}

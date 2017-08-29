@@ -147,6 +147,9 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DisplayList.cpp" />
+    <ClCompile Include="Ground.cpp" />
+    <ClCompile Include="ImageSprite.cpp" />
+    <ClCompile Include="List.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjModel.cpp" />
     <ClCompile Include="SkyBox.cpp" />
@@ -158,6 +161,9 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DisplayList.h" />
+    <ClInclude Include="Ground.h" />
+    <ClInclude Include="ImageSprite.h" />
+    <ClInclude Include="List.h" />
     <ClInclude Include="ObjModel.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Texture.h" />

@@ -6,6 +6,9 @@
 #include "ObjModel.h"
 #include "Camera.h"
 #include "SkyBox.h"
+#include "ImageSprite.h"
+#include "Ground.h"
+
 #include <iostream>
 using namespace std;
 #pragma comment(lib, "opengl32.lib")
@@ -16,6 +19,7 @@ Camera camera;
 SkyBox skybox;
 POINT originalPos;
 bool bRotateView = false;
+bool bPushingOnMe = false;
 
 LRESULT CALLBACK GLWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -37,6 +41,23 @@ LRESULT CALLBACK GLWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			camera.Pitch(-angleRotatedByRight);
 			SetCursorPos(originalPos.x, originalPos.y);
 		}
+		break;
+	case WM_LBUTTONDOWN:
+	{
+		int x = LOWORD(lParam) - camera.m_ViewPortWidth / 2;
+		int y = camera.m_VIewPortHeight / 2 - HIWORD(lParam);
+
+		if (x<0 && x>-640)
+		{
+			if (y<0 && y>-360)
+			{
+				bPushingOnMe = true;
+			}
+		}
+	}
+	break;
+	case WM_LBUTTONUP:
+		bPushingOnMe = false;
 		break;
 	case WM_RBUTTONDOWN:
 		originalPos.x = LOWORD(lParam);
@@ -148,15 +169,16 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	glViewport(0, 0, viewportWidth, viewportHeight);
 
 	//openGL init
-	glMatrixMode(GL_PROJECTION);// tell the GPU processer that i would select the project Matrix
-	gluPerspective(50.0f, (float)viewportWidth / (float)viewportHeight, 0.1f, 1000.0f); // set some value to project matrix
-	glMatrixMode(GL_MODELVIEW);// tel .. modle view matrix
-	glLoadIdentity();
+	camera.m_ViewPortWidth = viewportWidth;
+	camera.m_VIewPortHeight = viewportHeight;
+
 	//char* str = (char*)LoadFileContent("test.txt");
 	//printf("%s\n", str);
 	Texture* texture = Texture::LoadTexture("./res/earth.bmp");
 	//texture.Init("./res/earth.bmp");// init openGL texture
 	ObjModel model;
+	Ground ground;
+	ground.Init();
 	model.Init("./res/Sphere.obj");
 	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
 	skybox.Init("./res/skybox");
@@ -186,6 +208,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
+	//front face : ccw -> counter clock wind
+	ImageSprite sprite;
+	Texture* spriteImage = Texture::LoadTexture("./res/head.png");
+	sprite.SetTexture(spriteImage);
+	sprite.SetRect(-400.0f, -200.0f, 100.0f, 100.0f);
 	MSG msg;
 	static float sTimeSinceStartUp = timeGetTime() / 1000.0f;
 	while (true)
@@ -200,6 +227,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			DispatchMessage(&msg);
 		}
 		// draw scene
+		camera.SwitchTo3D();
 		glLoadIdentity();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float currentTime = timeGetTime() / 1000.0f;
@@ -210,10 +238,16 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		camera.Update(0.016f);// 60 frames per second
 		// skybox
 		skybox.Draw(camera.m_Pos.x, camera.m_Pos.y, camera.m_Pos.z);
+		//ground;
+		ground.Draw();
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture->m_textureID);
 		model.Draw();
-		//present scene
+		// draw UI
+		camera.SwitchTo2D();
+		glLoadIdentity();
+		sprite.Draw();
+		// present scene
 		SwapBuffers(dc);
 	}
 	return 0;
