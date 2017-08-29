@@ -2,7 +2,7 @@
 
 
 
-ImageSprite::ImageSprite()
+ImageSprite::ImageSprite():m_Alpha(255), m_FadeIn(false), m_FadeOut(false)
 {
 }
 
@@ -40,6 +40,7 @@ void ImageSprite::Draw()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glPushMatrix();
+	glColor4ub(255, 255, 255, m_Alpha);
 	glBindTexture(GL_TEXTURE_2D, m_Texture->m_textureID);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);
@@ -53,4 +54,47 @@ void ImageSprite::Draw()
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_BLEND);
+}
+
+void ImageSprite::FadeIn(float duration)
+{
+	if (!(m_FadeIn || m_FadeOut))
+	{
+		m_FadeIn = true;
+		m_FadeSpeed = int(255.0f / duration);
+	}
+}
+
+void ImageSprite::FadeOut(float duration)
+{
+	if (!(m_FadeIn || m_FadeOut))
+	{
+		m_FadeOut = true;
+		m_FadeSpeed = int(255.0f / duration);
+	}
+}
+
+void ImageSprite::Update(float deltaTime)
+{
+	if (m_FadeIn)
+	{
+		int alpha = m_Alpha;
+		alpha += int(m_FadeSpeed*deltaTime);
+		m_Alpha = alpha > 255 ? 255 : alpha;
+		if (m_Alpha == 255)
+		{
+			m_FadeIn = false;
+		}
+		
+	}
+	else if (m_FadeOut)
+	{
+		int alpha = m_Alpha;
+		alpha -= int(m_FadeSpeed*deltaTime);
+		m_Alpha = alpha < 0 ? 0 : alpha;
+		if (m_Alpha == 0)
+		{
+			m_FadeOut = false;
+		}
+	}
 }

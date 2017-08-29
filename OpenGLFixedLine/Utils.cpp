@@ -78,5 +78,5 @@ void SaveScreenPixelToFile(int width, int height, std::function<void()> foo, con
 		fwrite(screenPixel, 1, width*height * 3, pFile);
 		fclose(pFile);
 	}
-	printf("save success");
+	printf("save success\n");
 }

@@ -51,6 +51,9 @@
     <ClCompile Include="Ground.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">
@@ -84,6 +87,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Ground.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

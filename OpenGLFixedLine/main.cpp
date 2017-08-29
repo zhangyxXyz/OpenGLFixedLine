@@ -8,6 +8,7 @@
 #include "SkyBox.h"
 #include "ImageSprite.h"
 #include "Ground.h"
+#include "Button.h"
 
 #include <iostream>
 using namespace std;
@@ -20,12 +21,13 @@ SkyBox skybox;
 Texture* texture;
 ObjModel model;
 Ground ground;
-ImageSprite sprite;
+//ImageSprite sprite;
+Button* headButton;
+ImageSprite* headSprite;
 
 
 POINT originalPos;
 bool bRotateView = false;
-bool bPushingOnMe = false;
 
 void RenderOneFrame(float deltaTime)
 {
@@ -79,7 +81,10 @@ void RenderOneFrame(float deltaTime)
 	// draw UI
 	camera.SwitchTo2D();
 	glLoadIdentity();
-	sprite.Draw();
+	headButton->Draw();
+
+	headSprite->Update(deltaTime);
+	headSprite->Draw();
 	// present scene
 }
 
@@ -108,18 +113,16 @@ LRESULT CALLBACK GLWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		int x = LOWORD(lParam) - camera.m_ViewPortWidth / 2;
 		int y = camera.m_VIewPortHeight / 2 - HIWORD(lParam);
-
-		if (x<0 && x>-640)
-		{
-			if (y<0 && y>-360)
-			{
-				bPushingOnMe = true;
-			}
-		}
+		headButton->OnTouchBegin(x, y);
 	}
 	break;
 	case WM_LBUTTONUP:
-		bPushingOnMe = false;
+	{
+		int x = LOWORD(lParam) - camera.m_ViewPortWidth / 2;
+		int y = camera.m_VIewPortHeight / 2 - HIWORD(lParam);
+		headButton->OnTouchEnd(x, y);
+		headButton->ResetState();
+	}
 		break;
 	case WM_RBUTTONDOWN:
 		originalPos.x = LOWORD(lParam);
@@ -266,8 +269,41 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	//front face : ccw -> counter clock wind
 	Texture* spriteImage = Texture::LoadTexture("./res/head.png");
-	sprite.SetTexture(spriteImage);
-	sprite.SetRect(-400.0f, 280.0f, 100.0f, 100.0f);
+
+	ImageSprite* sprite = new ImageSprite();
+	sprite->SetTexture(spriteImage);
+	headButton = new Button();
+	headButton->SetDefaultSprite(sprite);
+	headButton->SetRect(-400.0f, 280.0f, 100.0f, 100.0f);
+	headButton->SetOnClick([]()->void 
+	{
+		printf("I have be clicked!\n");
+		headSprite->FadeOut(1.0f);
+	});
+
+	sprite = new ImageSprite;
+	sprite->SetTexture(Texture::LoadTexture("./res/fight.png"));
+	Button* btn = new Button();
+	btn->SetDefaultSprite(sprite);
+	btn->SetRect(480, 280.0f, 40.0f, 40.0f);
+	btn->SetOnClick([]()->void 
+	{
+		printf("fight!!\n"); 
+		headSprite->FadeIn(1.0f);
+	});
+	headButton->Push(btn);
+
+	sprite = new ImageSprite;
+	sprite->SetTexture(Texture::LoadTexture("./res/icon.png"));
+	btn = new Button();
+	btn->SetDefaultSprite(sprite);
+	btn->SetRect(400, 280.0f, 100.0f, 100.0f);
+	btn->SetOnClick([]()->void {printf("gift!!\n"); });
+	headButton->Push(btn);
+
+	headSprite = new ImageSprite();
+	headSprite->SetTexture(spriteImage);
+	headSprite->SetRect(0.0f, 0.0f, 100.0f, 100.0f);
 
 	SaveScreenPixelToFile(viewportWidth,viewportHeight,[]()->void
 	{

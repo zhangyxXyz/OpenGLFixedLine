@@ -2,9 +2,6 @@
 
 
 
-List::List()
-{
-}
 
 
 List::~List()
