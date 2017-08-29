@@ -152,8 +152,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	glLoadIdentity();
 	//char* str = (char*)LoadFileContent("test.txt");
 	//printf("%s\n", str);
-	Texture texture;
-	texture.Init("./res/earth.bmp");// init openGL texture
+	Texture* texture = Texture::LoadTexture("./res/earth.bmp");
+	//texture.Init("./res/earth.bmp");// init openGL texture
 	ObjModel model;
 	model.Init("./res/Sphere.obj");
 	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
@@ -206,7 +206,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		camera.Update(0.016f);// 60 frames per second
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
+		glBindTexture(GL_TEXTURE_2D, texture->m_textureID);
 		model.Draw();
 		//present scene
 		SwapBuffers(dc);

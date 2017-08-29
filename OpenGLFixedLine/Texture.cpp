@@ -1,9 +1,11 @@
 #include "Texture.h"
 #include "Utils.h"
+#include "soil.h"
 
-
+#pragma comment(lib,"soil.lib")
 Texture::Texture()
 {
+
 }
 
 
@@ -33,8 +35,17 @@ unsigned char* DecodeBmp(unsigned char* bmpFileData, int& width, int& height)
 	}
 }
 
-void Texture::Init(const char * imgPath)
+void Texture::Init(const char * imgPath, bool invertY)
 {
+	unsigned int flags = SOIL_FLAG_POWER_OF_TWO;
+	if (invertY)
+	{
+		flags |= SOIL_FLAG_INVERT_Y;
+	}
+	m_Path = imgPath;
+	m_textureID = SOIL_load_OGL_texture(imgPath, 0, 0, flags);
+	return;
+	/*
 	// load image file from disk to memory
 	unsigned char* imageFileContent = LoadFileContent(imgPath);
 	// decode image
@@ -51,4 +62,29 @@ void Texture::Init(const char * imgPath)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	delete imageFileContent;
+	*/
+}
+
+Texture * Texture::LoadTexture(const char* imagePath, bool invertY)
+{
+	if (m_CachedTextures.find(imagePath) != m_CachedTextures.end())
+	{
+		return m_CachedTextures[imagePath];
+	}
+	Texture* texture = new Texture();
+	texture->Init(imagePath, invertY);
+	m_CachedTextures.insert(std::pair<std::string, Texture*>(imagePath, texture));
+	return texture;
+}
+
+void Texture::UnloadTexture(Texture * texture)
+{
+	auto iter = m_CachedTextures.find(texture->m_Path.c_str());
+	if (iter != m_CachedTextures.end())
+	{
+		m_CachedTextures.erase(iter);
+		glDeleteTextures(1, &iter->second->m_textureID);
+		delete texture;
+		texture = nullptr;
+	}
 }
