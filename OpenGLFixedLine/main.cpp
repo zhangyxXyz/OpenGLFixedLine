@@ -17,9 +17,71 @@ using namespace std;
 
 Camera camera;
 SkyBox skybox;
+Texture* texture;
+ObjModel model;
+Ground ground;
+ImageSprite sprite;
+
+
 POINT originalPos;
 bool bRotateView = false;
 bool bPushingOnMe = false;
+
+void RenderOneFrame(float deltaTime)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	camera.SwitchTo3D();
+	glLoadIdentity();
+
+	// set up camera
+	camera.Update(deltaTime);// 60 frames per second (0.016)
+
+	glEnable(GL_TEXTURE_2D);
+	// skybox
+	skybox.Draw(camera.m_Pos.x, camera.m_Pos.y, camera.m_Pos.z);
+	//ground;
+	ground.Draw();
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture->m_textureID);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_COLOR, GL_ONE);
+	glPushMatrix();
+	glTranslatef(0.0f, -2.0f, 0.0f);
+	glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+	model.Draw();
+	glPopMatrix();
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	model.Draw();
+
+	// viewport 
+	//glViewport(viewportWidth/2, viewportHeight / 2, viewportWidth / 2, viewportHeight / 2);
+	//glLoadIdentity();
+	//gluLookAt(5.0f, 0.0f, 0.0f, 4.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	//skybox.Draw(camera.m_Pos.x, camera.m_Pos.y, camera.m_Pos.z);
+	////ground;
+	//ground.Draw();
+	//glEnable(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, texture->m_textureID);
+	//glDisable(GL_DEPTH_TEST);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_COLOR, GL_ONE);
+	//glPushMatrix();
+	//glTranslatef(0.0f, -2.0f, 0.0f);
+	//glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+	//model.Draw();
+	//glPopMatrix();
+	//glEnable(GL_DEPTH_TEST);
+	//glDisable(GL_BLEND);
+	//model.Draw();
+
+	// draw UI
+	camera.SwitchTo2D();
+	glLoadIdentity();
+	sprite.Draw();
+	// present scene
+}
 
 LRESULT CALLBACK GLWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -171,17 +233,13 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	//openGL init
 	camera.m_ViewPortWidth = viewportWidth;
 	camera.m_VIewPortHeight = viewportHeight;
-
-	//char* str = (char*)LoadFileContent("test.txt");
-	//printf("%s\n", str);
-	Texture* texture = Texture::LoadTexture("./res/earth.bmp");
+	
+	texture = Texture::LoadTexture("./res/earth.bmp");
 	//texture.Init("./res/earth.bmp");// init openGL texture
-	ObjModel model;
-	Ground ground;
 	ground.Init();
 	model.Init("./res/Sphere.obj");
-	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
 	skybox.Init("./res/skybox");
+	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
 	// show window
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
@@ -195,7 +253,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteColor);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteColor);
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-
 	float blackMat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float ambientMat[] = { 0.1f,0.1f,0.1f,1.0f };
 	float diffuseMat[] = { 0.8f,0.8f,0.8f,1.0f };
@@ -204,15 +261,25 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseMat);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, blackMat);
 	glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
-
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
 	//front face : ccw -> counter clock wind
-	ImageSprite sprite;
 	Texture* spriteImage = Texture::LoadTexture("./res/head.png");
 	sprite.SetTexture(spriteImage);
-	sprite.SetRect(-400.0f, -200.0f, 100.0f, 100.0f);
+	sprite.SetRect(-400.0f, 280.0f, 100.0f, 100.0f);
+
+	SaveScreenPixelToFile(viewportWidth,viewportHeight,[]()->void
+	{
+		RenderOneFrame(0.0f);
+	}, "screenshot.bmp");
+	//Texture*screenTexture = new Texture();
+	//screenTexture->m_textureID = CaptureScreen(viewportWidth, viewportHeight, []()->void
+	//{
+	//	RenderOneFrame(0.0f);
+	//});
+	//sprite.SetTexture(screenTexture);
+
 	MSG msg;
 	static float sTimeSinceStartUp = timeGetTime() / 1000.0f;
 	while (true)
@@ -226,38 +293,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		// draw scene
-		camera.SwitchTo3D();
-		glLoadIdentity();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float currentTime = timeGetTime() / 1000.0f;
 		float timeElapse = currentTime - sTimeSinceStartUp;
 		sTimeSinceStartUp = currentTime;
-
-		// set up camera
-		camera.Update(0.016f);// 60 frames per second
-		// skybox
-		skybox.Draw(camera.m_Pos.x, camera.m_Pos.y, camera.m_Pos.z);
-		//ground;
-		ground.Draw();
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture->m_textureID);
-		glDisable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_COLOR, GL_ONE);
-		glPushMatrix();
-		glTranslatef(0.0f, -2.0f, 0.0f);
-		glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
-		model.Draw();
-		glPopMatrix();
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
-		model.Draw();
-		// draw UI
-		camera.SwitchTo2D();
-		glLoadIdentity();
-		sprite.Draw();
-		// present scene
+		RenderOneFrame(timeElapse);
 		SwapBuffers(dc);
 	}
 	return 0;
