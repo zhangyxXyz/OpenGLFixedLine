@@ -57,6 +57,9 @@
     <ClCompile Include="Particle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Fbx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">
@@ -96,6 +99,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Fbx.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
