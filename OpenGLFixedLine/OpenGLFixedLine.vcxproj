@@ -151,6 +151,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DisplayList.cpp" />
     <ClCompile Include="Fbx.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="ImageSprite.cpp" />
     <ClCompile Include="List.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DisplayList.h" />
     <ClInclude Include="Fbx.h" />
+    <ClInclude Include="FontManager.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="ImageSprite.h" />
     <ClInclude Include="List.h" />

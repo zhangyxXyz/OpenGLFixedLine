@@ -11,6 +11,7 @@
 #include "Button.h"
 #include "Particle.h"
 #include "Fbx.h"
+#include "FontManager.h"
 
 #include <iostream>
 using namespace std;
@@ -252,6 +253,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	skybox.Init("./res/skybox");
 	fbxmodel.Init("./res/tauren.fbx");
 	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
+	FontManager::Init(dc);
 	// show window
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
@@ -275,6 +277,13 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	glMaterialf(GL_FRONT, GL_SHININESS, 128.0f);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+
+	//GLuint mTexts;
+	//mTexts = glGenLists(96);
+	//HFONT hFont = CreateFontA(24, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Arial");
+	//SelectObject(dc, hFont);
+
+	//wglUseFontBitmapsA(dc, 32, 96, mTexts);
 
 	//front face : ccw -> counter clock wind
 	Texture* spriteImage = Texture::LoadTexture("./res/head.png");
@@ -329,7 +338,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		rootPartical->Push(particle);
 	}
 
-
+	/*char szBuffer[256] = {0};
+	strcpy_s(szBuffer, "Hello Font");*/
 
 	SaveScreenPixelToFile(viewportWidth,viewportHeight,[]()->void
 	{
@@ -361,6 +371,18 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		/*glEnable(GL_SCISSOR_TEST);
 		glScissor(0, 0, viewportWidth / 2, viewportHeight);*/
 		RenderOneFrame(timeElapse);
+
+		glColor4ub(255, 0, 0, 255);
+		glRasterPos2f(-600.0f, 0.0f);
+		FontManager::Draw(L"ÄãºÃÂð? OpenGL");
+
+		/*memset(szBuffer, 0, 256);
+		_strtime(szBuffer);
+		glListBase(mTexts - 32);
+		glColor4ub(255, 0, 0, 255);
+		glRasterPos2f(-600.0f, 0.0f);
+		glCallLists(strlen(szBuffer), GL_BYTE, szBuffer);*/
+
 		SwapBuffers(dc);
 	}
 	return 0;
