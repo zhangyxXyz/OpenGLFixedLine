@@ -12,6 +12,8 @@
 #include "Particle.h"
 #include "Fbx.h"
 #include "FontManager.h"
+#include "SequenceSprite.h"
+#include "SequenceSprite3D.h"
 
 #include <iostream>
 using namespace std;
@@ -29,6 +31,8 @@ Button* headButton;
 ImageSprite* headSprite;
 Particle* rootPartical;
 Fbx fbxmodel;
+SequenceSprite sequenceSprite;
+SequenceSprite3D sequenceSprite3D;
 
 POINT originalPos;
 bool bRotateView = false;
@@ -56,10 +60,15 @@ void RenderOneFrame(float deltaTime)
 	glTranslatef(0.0f, -2.0f, 0.0f);
 	glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
 	model.Draw();
+
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	model.Draw();
+
+
+	sequenceSprite3D.Update(deltaTime);
+	sequenceSprite3D.Draw();
 
 	// fbx model
 	fbxmodel.Draw();
@@ -94,6 +103,10 @@ void RenderOneFrame(float deltaTime)
 	rootPartical->Draw();
 	headSprite->Update(deltaTime);
 	headSprite->Draw();
+
+	sequenceSprite.Update(deltaTime);
+	sequenceSprite.Draw();
+
 	// present scene
 }
 
@@ -252,6 +265,12 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	model.Init("./res/Sphere.obj");
 	skybox.Init("./res/skybox");
 	fbxmodel.Init("./res/tauren.fbx");
+	sequenceSprite.Init("res/ss/", "a", 31, 240, 30);
+	sequenceSprite.SetRect(0.0f, 200.0f, 256.0f, 256.0f);
+
+	sequenceSprite3D.Init("res/ss/", "a", 31, 240, 30);
+	sequenceSprite3D.SetRect(0.0f, 0.0f, 2.0f, 2.0f);
+
 	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
 	FontManager::Init(dc);
 	// show window
@@ -382,7 +401,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		glColor4ub(255, 0, 0, 255);
 		glRasterPos2f(-600.0f, 0.0f);
 		glCallLists(strlen(szBuffer), GL_BYTE, szBuffer);*/
-
 		SwapBuffers(dc);
 	}
 	return 0;

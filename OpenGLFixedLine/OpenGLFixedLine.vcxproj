@@ -158,6 +158,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjModel.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="SequenceSprite.cpp" />
+    <ClCompile Include="SequenceSprite3D.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -175,6 +177,8 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="ObjModel.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="SequenceSprite.h" />
+    <ClInclude Include="SequenceSprite3D.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Utils.h" />
