@@ -10,6 +10,7 @@
 #include "Ground.h"
 #include "Button.h"
 #include "Particle.h"
+#include "Fbx.h"
 
 #include <iostream>
 using namespace std;
@@ -26,7 +27,7 @@ Ground ground;
 Button* headButton;
 ImageSprite* headSprite;
 Particle* rootPartical;
-
+Fbx fbxmodel;
 
 POINT originalPos;
 bool bRotateView = false;
@@ -58,6 +59,9 @@ void RenderOneFrame(float deltaTime)
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	model.Draw();
+
+	// fbx model
+	fbxmodel.Draw();
 
 	// viewport 
 	//glViewport(viewportWidth/2, viewportHeight / 2, viewportWidth / 2, viewportHeight / 2);
@@ -246,6 +250,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	ground.Init();
 	model.Init("./res/Sphere.obj");
 	skybox.Init("./res/skybox");
+	fbxmodel.Init("./res/tauren.fbx");
 	glClearColor(0.1f, 0.4f, 0.6f, 1.0f); // set "clear color" for background
 	// show window
 	ShowWindow(hwnd, SW_SHOW);
@@ -353,6 +358,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		float currentTime = timeGetTime() / 1000.0f;
 		float timeElapse = currentTime - sTimeSinceStartUp;
 		sTimeSinceStartUp = currentTime;
+		/*glEnable(GL_SCISSOR_TEST);
+		glScissor(0, 0, viewportWidth / 2, viewportHeight);*/
 		RenderOneFrame(timeElapse);
 		SwapBuffers(dc);
 	}
