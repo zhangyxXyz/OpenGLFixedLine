@@ -9,6 +9,7 @@
 #include "ImageSprite.h"
 #include "Ground.h"
 #include "Button.h"
+#include "Particle.h"
 
 #include <iostream>
 using namespace std;
@@ -24,6 +25,7 @@ Ground ground;
 //ImageSprite sprite;
 Button* headButton;
 ImageSprite* headSprite;
+Particle* rootPartical;
 
 
 POINT originalPos;
@@ -83,6 +85,8 @@ void RenderOneFrame(float deltaTime)
 	glLoadIdentity();
 	headButton->Draw();
 
+	rootPartical->Update(deltaTime);
+	rootPartical->Draw();
 	headSprite->Update(deltaTime);
 	headSprite->Draw();
 	// present scene
@@ -301,9 +305,26 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	btn->SetOnClick([]()->void {printf("gift!!\n"); });
 	headButton->Push(btn);
 
+	Texture* particleTexture = new Texture();
+	particleTexture->m_textureID = CreateTexture(256);
+	
+	// fadein fadeout
 	headSprite = new ImageSprite();
-	headSprite->SetTexture(spriteImage);
+	headSprite->SetTexture(particleTexture);
 	headSprite->SetRect(0.0f, 0.0f, 100.0f, 100.0f);
+	
+
+	rootPartical = new Particle(true);
+	Particle::InitSpeeds();
+	for (int i = 0;i < 2000;++i)
+	{
+		Particle* particle = new Particle(false);
+		particle->SetTexture(particleTexture);
+		particle->SetRect(0.0f, 0.0f, 20.0f, 20.0f);
+		rootPartical->Push(particle);
+	}
+
+
 
 	SaveScreenPixelToFile(viewportWidth,viewportHeight,[]()->void
 	{

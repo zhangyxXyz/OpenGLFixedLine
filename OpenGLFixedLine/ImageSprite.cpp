@@ -4,6 +4,8 @@
 
 ImageSprite::ImageSprite():m_Alpha(255), m_FadeIn(false), m_FadeOut(false)
 {
+	m_R = m_G = m_B = 255;
+	m_DstFactor = GL_ONE_MINUS_SRC_ALPHA;
 }
 
 
@@ -37,10 +39,12 @@ void ImageSprite::Draw()
 {
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, m_DstFactor);
 	glPushMatrix();
-	glColor4ub(255, 255, 255, m_Alpha);
+	glTranslatef(m_Pos.x, m_Pos.y, m_Pos.z);
+	glColor4ub(m_R, m_G, m_B, m_Alpha);
 	glBindTexture(GL_TEXTURE_2D, m_Texture->m_textureID);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);
